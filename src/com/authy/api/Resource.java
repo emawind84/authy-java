@@ -6,15 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to send http requests.
@@ -25,6 +28,8 @@ public class Resource {
 	private String apiUri, apiKey;
 	private int status;
 	private boolean testFlag = false;
+	
+	private static Logger logger = LoggerFactory.getLogger( Resource.class );
 
 	public static final String ENCODE = "UTF-8";
 	public static final String XML_CONTENT_TYPE = "application/xml";
@@ -113,6 +118,8 @@ public class Resource {
 
 			status = connection.getResponseCode();
 			answer = getResponse(connection);
+			
+			logger.trace( "method : {}, result : {}", method, answer );
 		}
 		catch(SSLHandshakeException e) {
 			System.err.println("SSL verification is failing. This might be because of an attack. Contact support@authy.com");
@@ -193,6 +200,10 @@ public class Resource {
 		StringBuffer sb = new StringBuffer();
 		Map<String, String> params = data.toMap();
 
+		if( params == null ) {
+			return "";
+		}
+		
 		for(Entry<String, String> s : params.entrySet()) {
 			sb.append('&');
 			sb.append(URLEncoder.encode(s.getKey(), ENCODE) + "=" + URLEncoder.encode(s.getValue(), ENCODE));

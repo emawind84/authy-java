@@ -3,7 +3,6 @@ package com.authy.api;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -13,6 +12,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -24,6 +26,8 @@ public class Users extends Resource {
 	public static final String DELETE_USER_PATH = "/protected/xml/users/delete/";
 	public static final String SMS_PATH = "/protected/xml/sms/";
 	public static final String DEFAULT_COUNTRY_CODE = "1";
+	
+	private static Logger logger = LoggerFactory.getLogger( Users.class );
 	
 	public Users(String uri, String key) {
 		super(uri, key);
@@ -44,7 +48,7 @@ public class Users extends Resource {
 		Users.User user = new Users.User(email, phone, countryCode);
 		
 		String content = this.post(NEW_USER_PATH, user);
-
+		
 		return userFromXml(this.getStatus(), content);
 	}
 	
